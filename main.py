@@ -25,6 +25,8 @@ in modern oceans. Other fish such as paddlefish,
 garpike and stingray are also present.'''
 ]
 
+import re
+
 user_info = {
     "bob" : "123", 
     "ann" : "pass123", 
@@ -56,16 +58,7 @@ if number not in x:
     exit()
 
 selected_text = TEXTS[int(number)-1]
-
-all_words = []
-word = ""
-for letter in selected_text:  
-    if letter in (" ", "\n"):
-        all_words.append(word)
-        word = ""
-    else:
-        word += letter
-all_words.append(word)
+selected_text = [x for x in re.split(r'[ ,.;\n]', selected_text) if x != ""]
 
 total_words = 0
 titlecase_words = 0
@@ -75,7 +68,7 @@ numeric_strings = 0
 sum_of_numbers = 0
 every_word_length = []
 
-for i in all_words:
+for i in selected_text:
     total_words += 1
     
     if i.isupper():
@@ -90,8 +83,7 @@ for i in all_words:
 
     length_of_word = 0 
     for letter in i:
-        if letter not in (",", "."):
-            length_of_word += 1
+        length_of_word += 1
     every_word_length.append(length_of_word)
 
 final_table = " 1|"
