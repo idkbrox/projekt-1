@@ -50,15 +50,15 @@ else:
     exit()
 
 print("----------------------------------------")
-number = input(f"Enter a number between 1 and {len(TEXTS)} to select: ")
+number = int(input(f"Enter a number between 1 and {len(TEXTS)} to select: "))
  
-x = [str(i) for i in range(1, len(TEXTS)+1)]
-if number not in x:
+
+if 1 > number or number > len(TEXTS):
     print("Invalid number, terminating the program..")
     exit()
 
-selected_text = TEXTS[int(number)-1]
-selected_text = [x for x in re.split(r'[ ,.;\n]', selected_text) if x != ""]
+selected_text = TEXTS[number-1]
+words = re.split(r'[ ,.;!?\-\n]', selected_text) 
 
 total_words = 0
 titlecase_words = 0
@@ -66,48 +66,26 @@ uppercase_words = 0
 lowercase_words = 0
 numeric_strings = 0
 sum_of_numbers = 0
-every_word_length = []
+histogram = {}
 
-for i in selected_text:
-    total_words += 1
-    
-    if i.isupper():
-        uppercase_words += 1
-    elif i[0].isupper():
-        titlecase_words += 1 
-    elif i.islower():
-        lowercase_words += 1
-    else:
-        numeric_strings += 1
-        sum_of_numbers += int(i)
+for word in words:
+    if word:
+        total_words += 1
+        
+        if word.isupper():
+            uppercase_words += 1
+        elif word[0].isupper():
+            titlecase_words += 1 
+        elif word.islower():
+            lowercase_words += 1
+        else:
+            numeric_strings += 1
+            sum_of_numbers += int(word)
 
-    length_of_word = 0 
-    for letter in i:
-        length_of_word += 1
-    every_word_length.append(length_of_word)
-
-final_table = " 1|"
-expected_length = 1
-number_of_words = 0
-space = " "
-while every_word_length != []:
-    if expected_length == 9:
-        space = ""
-
-    if expected_length in every_word_length:
-        number_of_words += 1 
-        every_word_length.remove(expected_length)
-    else:
-        expected_length += 1
-        final_table += (
-            f'{"*"*number_of_words}{" "*(20-number_of_words)}'
-            f'|{number_of_words}\n{space}{expected_length}|'
-        )
-        number_of_words = 0
-final_table += (
-    f'{"*"*number_of_words}{" "*(20-number_of_words)}'
-    f'|{number_of_words}'
-)
+        try:
+            histogram[len(word)] += 1 
+        except KeyError:
+            histogram[len(word)] = 1
 
 print(f'''----------------------------------------
 There are {total_words} words in selected text
@@ -118,5 +96,10 @@ There are {numeric_strings} numeric strings in selected text
 The sum of all numbers {sum_of_numbers}
 ----------------------------------------
 LEN| OCCURRENCES |NR.
-----------------------------------------
-{final_table}''')
+----------------------------------------''')
+
+histogram = dict(sorted(histogram.items()))
+
+for i in histogram:
+    print(f"{i:>2}|{("*"*(histogram[i])):<20}|{histogram[i]}")
+    
